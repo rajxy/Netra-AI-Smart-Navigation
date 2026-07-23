@@ -1,0 +1,51 @@
+import cv2
+import time
+from src.object_detector import ObjectDetector
+from src.distance_estimator import DistanceEstimator
+from src.navigation_engine import NavigationEngine
+from src.audio_feedback import AudioFeedback
+
+def main():
+    # Initialize components
+    detector = ObjectDetector(model_path="yolov8n.pt", conf_threshold=0.5)
+    distance_estimator = DistanceEstimator(focal_length=600, known_width=0.5)
+    navigation = NavigationEngine(frame_width=640, safe_distance_threshold=1.8)
+    audio = AudioFeedback()
+
+    cap = cv2.VideoCapture(0)  # Webcam feed
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+    last_alert_time = 0
+    alert_cooldown = 2.5  # Prevent audio overlap (in seconds)
+
+    print("[INFO] Netra AI Navigation System Started. Press 'q' to exit.")
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # 1. Detect objects
+        detections, annotated_frame = detector.detect(frame)
+
+        # 2. Analyze hazard zones & proximity
+        alerts = navigation.analyze_hazards(detections, distance_estimator)
+
+        # 3. Trigger voice assistance
+        current_time = time.time()
+        if alerts and (current_time - last_alert_time > alert_cooldown):
+            audio.speak(alerts[0])
+            last_alert_time = current_time
+
+        # 4. Render live video feed
+        cv2.imshow("Netra AI - Smart Navigation", annotated_frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
