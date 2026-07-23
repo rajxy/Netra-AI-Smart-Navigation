@@ -1,0 +1,20 @@
+Netra-AI-Smart-Navigation/
+│
+├── assets/                       # Demo screenshots/GIFs for README
+│   └── demo.gif
+├── data/                         # Sample test videos or audio files
+│   └── test_video.mp4
+├── models/                       # Pre-trained YOLO models / weights
+│   └── yolov8n.pt
+├── src/                          # Core source code
+│   ├── __init__.py
+│   ├── object_detector.py        # YOLOv8 detection & bounding box processing
+│   ├── distance_estimator.py     # Depth & distance estimation logic
+│   ├── navigation_engine.py      # Spatial direction & safety threshold alerts
+│   └── audio_feedback.py         # Text-to-Speech (pyttsx3) voice assistance
+│
+├── .gitignore
+├── LICENSE                       # MIT License
+├── README.md                     # Comprehensive GitHub documentation
+├── main.py                       # Application entry point / Live webcam loop
+└── requirements.txt              # Python dependencies
